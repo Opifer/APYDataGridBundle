@@ -32,6 +32,7 @@ class Grid
     const REQUEST_QUERY_EXPORT = '__export_id';
     const REQUEST_QUERY_TWEAK = '__tweak_id';
     const REQUEST_QUERY_PAGE = '_page';
+    const REQUEST_QUERY_COLUMNS = '_columns';
     const REQUEST_QUERY_LIMIT = '_limit';
     const REQUEST_QUERY_ORDER = '_order';
     const REQUEST_QUERY_TEMPLATE = '_template';
@@ -453,6 +454,8 @@ class Grid
 
         $this->processPage($this->getFromRequest(self::REQUEST_QUERY_PAGE), $filtering);
 
+        $this->processColumns($this->getFromRequest(self::REQUEST_QUERY_COLUMNS));
+
         $this->processOrder($this->getFromRequest(self::REQUEST_QUERY_ORDER));
 
         $this->processLimit($this->getFromRequest(self::REQUEST_QUERY_LIMIT));
@@ -542,6 +545,22 @@ class Grid
         }
 
         return false;
+    }
+
+    /**
+     * Process columns
+     *
+     * @param array $columnIds
+     *
+     * @return $this
+     */
+    protected function processColumns($columnIds)
+    {
+        if (count((array) $columnIds)) {
+            $this->set(self::REQUEST_QUERY_COLUMNS, $columnIds);
+        }
+
+        return $this;
     }
 
     /**
@@ -818,6 +837,17 @@ class Grid
             $this->setPage($page);
         } else {
             $this->setPage(0);
+        }
+
+        // Columns
+        if (($columnIds = $this->get(self::REQUEST_QUERY_COLUMNS)) !== null) {
+            if (count((array) $columnIds)) {
+                foreach ($this->columns as $column) {
+                    if (!in_array($column->getId(), $columnIds)) {
+                        $column->setVisible(false);
+                    }
+                }
+            }
         }
 
         // Order
