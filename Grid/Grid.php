@@ -845,6 +845,8 @@ class Grid
                 foreach ($this->columns as $column) {
                     if (!in_array($column->getId(), $columnIds)) {
                         $column->setVisible(false);
+                    } else {
+                        $column->setVisible(true);
                     }
                 }
             }
