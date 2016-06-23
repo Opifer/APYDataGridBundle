@@ -13,6 +13,7 @@
 namespace APY\DataGridBundle\Grid\Source;
 
 use APY\DataGridBundle\Grid\Column\Column;
+use APY\DataGridBundle\Grid\Filter;
 use APY\DataGridBundle\Grid\Rows;
 use APY\DataGridBundle\Grid\Row;
 use Doctrine\ORM\NoResultException;
@@ -372,6 +373,7 @@ class Entity extends Source
 
                 $sub = $isDisjunction ? $this->query->expr()->orx() : ($hasHavingClause ? $this->query->expr()->andx() : $where);
 
+                /** @var Filter $filter */
                 foreach ($filters as $filter) {
                     $operator = $this->normalizeOperator($filter->getOperator());
 
@@ -396,6 +398,8 @@ class Entity extends Source
                         $this->query->setParameter($bindIndex++, $this->normalizeValue($filter->getOperator(), $filter->getValue()));
                     }
                 }
+
+                $column->addFilterCondition($sub, $this->query);
 
                 if ($hasHavingClause) {
                     $this->query->andHaving($sub);

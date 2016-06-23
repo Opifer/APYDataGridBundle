@@ -13,6 +13,9 @@
 namespace APY\DataGridBundle\Grid\Column;
 
 use Doctrine\Common\Version as DoctrineVersion;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\Expr\Composite;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use APY\DataGridBundle\Grid\Filter;
 
@@ -785,6 +788,20 @@ abstract class Column
         $regex = '/(?P<all>(?P<field>\w+):(?P<function>\w+)(:)?(?P<parameters>\w*))$/';
 
         return ($matches === null) ? preg_match($regex, $this->field) : preg_match($regex, $this->field, $matches);
+    }
+
+    /**
+     * Add an extra condition to a column filter.
+     *
+     * @param Composite $sub
+     * @param QueryBuilder $query
+     * @return $this
+     */
+    public function addFilterCondition(Composite $sub, QueryBuilder $query)
+    {
+        // Do nothing. Override in child column
+
+        return $this;
     }
 
     /**
